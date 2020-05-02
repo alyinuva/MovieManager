@@ -28,8 +28,21 @@ class LoginViewController: UIViewController {
     }
     
     @IBAction func loginViaWebsiteTapped() {
-        performSegue(withIdentifier: "completeLogin", sender: nil)
+        // Si hacemos click dentro del login via web, entonces llamaremos a la misma función que llamamos cuando hicimos log in mediante correo, ya que en ambos casos necesitamos pedir un Token. La diferencia está en el handler: en vez de ahora llamar la función TMDB.login enviando un usuario y password, abriremos el web browser (revisa completionHandlerOfGetRequestTokenByBrowser)
+        TMDBClient.getRequestToken(completionOfgetAuthToken: self.completionHandlerOfGetRequestTokenByBrowser(seCompleto:error:))
+        }
+    
+    func completionHandlerOfGetRequestTokenByBrowser(seCompleto: Bool, error: Error?) {
+        // El request token se llama tanto sea entrado por correo o por la web. Si es por la web, lo que procede es a abrir el URL de web authentication para que TMDB sea quien se encarge de la autenticación.
+        if seCompleto {
+            DispatchQueue.main.async {
+                // Usando open abriremos el web browser con la página de TMDB para que se haga la autentificación.
+                UIApplication.shared.open(TMDBClient.Endpoints.webAuth.url, options: [:], completionHandler: nil)
+                // Si esta autentificación sale exitosa, la página debería devolvernos a la app. Para seguir, revisa  func application(_ app: UIApplication, open url: ... En AppDelegate.swift.
+            }
+        }
     }
+    
     
     func completionHandlerOfgetRequestToken(seCompleto: Bool, error: Error?) {
         guard seCompleto else {

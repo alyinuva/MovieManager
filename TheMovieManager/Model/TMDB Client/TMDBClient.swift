@@ -25,11 +25,14 @@ class TMDBClient {
         static let requestTokenEndPoint = "/authentication/token/new"
         static let authenticationLogin = "/authentication/token/validate_with_login"
         static let newSessionEndpoint = "/authentication/session/new"
+        static let webAuthByTMDB = "https://www.themoviedb.org/authenticate/"
+        static let redirect = "?redirect_to=themoviemanager:authenticate" // themoviemanager es el protocolo (el scheme), en nuestro caso, el URL que será handled por the Movie Manager. authenticate es el path. Si por a o b quisieramos manejar (handle) multiplos incoming URL en nuestra app, podríamos especificar un path distinto.
         
         case getWatchlist
         case getRequestTokenURL
         case login
         case createSessionID
+        case webAuth
         
         var stringValue: String {
             switch self {
@@ -42,6 +45,8 @@ class TMDBClient {
                 return Endpoints.base + Endpoints.authenticationLogin + Endpoints.apiKeyParam
             case .createSessionID:
                 return Endpoints.base + Endpoints.newSessionEndpoint + Endpoints.apiKeyParam
+            case .webAuth:
+                return Endpoints.webAuthByTMDB + Auth.requestToken + Endpoints.redirect
             }
         }
         
